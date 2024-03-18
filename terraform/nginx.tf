@@ -35,7 +35,7 @@ resource "google_compute_instance" "nginx-vm" {
     echo '${file("../web/index.html")}' > /var/www/html/index.html
     echo '${file("../web/nginx.conf")}' > /etc/nginx/sites-available/default
     ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/
-    apt install certbot python3-certbot-nginx
+    apt install certbot python3-certbot-nginx -y
     certbot --nginx -d ${var.domain_name} --non-interactive --agree-tos --email ${var.personal_email} --redirect
     systemctl restart nginx
 
