@@ -44,7 +44,7 @@ EOF
   service_account {
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
     email  = var.service_account_email
-    scopes = var.service_account_scope
+    scopes = [var.service_account_scope]
   }
 }
 
