@@ -39,6 +39,7 @@ jobs:
         run: |
           cd terraform
           terraform init
+          terraform force-unlock 43814e48-764b-75c9-3d71-17ca9185b810
           terraform plan
 
       - name: Terraform apply
