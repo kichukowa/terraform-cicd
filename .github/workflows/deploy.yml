@@ -48,6 +48,12 @@ jobs:
           TF_VAR_dns_record=${{ vars.DNS_RECORD }}
           echo TF_VAR_dns_record=$TF_VAR_dns_record >> $GITHUB_ENV
 
+          TF_VAR_service_account_scope=${{ vars.SERVICE_ACCOUNT_SCOPE }}
+          echo TF_VAR_service_account_scope=$TF_VAR_service_account_scope >> $GITHUB_ENV
+
+          TF_VAR_domain_name=${{ vars.DOMAIN_NAME }}
+          echo TF_VAR_domain_name=$TF_VAR_domain_name >> $GITHUB_ENV
+
       - name: Replace nginx server name in nginx config
         run: sed -i 's/URL_TO_CHANGE/${{ vars.dns_record }}/g' web/nginx.conf
 
