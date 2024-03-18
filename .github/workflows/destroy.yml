@@ -1,0 +1,31 @@
+name: Destroy Nginx
+on:
+  workflow_dispatch:
+
+jobs:
+  nginx_destroy:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: HashiCorp - Setup Terraform
+        uses: hashicorp/setup-terraform@v3.0.0
+
+      - name: Authenticating in GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_KEY }}
+
+      - name: Export secrets in GitHub env
+        run: |
+          #
+          #
+          #
+
+      - name: Terraform init
+        run: cd terraform && terraform init
+
+      - name: Terraform apply
+        run: cd terraform && terraform destroy --auto-approve

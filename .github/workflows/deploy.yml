@@ -1,0 +1,40 @@
+name: Deploy Nginx
+on:
+  workflow_dispatch:
+
+jobs:
+  nginx_deploy:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: HashiCorp - Setup Terraform
+        uses: hashicorp/setup-terraform@v3.0.0
+
+      - name: Authenticating in GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_KEY }}
+
+      - name: Export secrets in GitHub env
+        run: |
+          echo "TF_VAR_cloudflare_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}" >> $GITHUB_ENV
+          echo "TF_VAR_service_account_email=${{ secrets.service_account_email }}" >> $GITHUB_ENV
+          echo "TF_VAR_personal_email=${{ secrets.personal_email }}" >> $GITHUB_ENV
+          echo "TF_VAR_cloudflare_zone_id=${{ secrets.cloudflare_zone_id }}" >> $GITHUB_ENV
+          #
+          echo "TF_VAR_project_name=${{ vars.project_name }}" >> $GITHUB_ENV
+          echo "TF_VAR_region=${{ vars.region }}" >> $GITHUB_ENV
+          echo "TF_VAR_vpc=${{ vars.vpc }}" >> $GITHUB_ENV
+          echo "TF_VAR_dns_record=${{ vars.dns_record }}" >> $GITHUB_ENV
+
+      - name: Replace nginx server name in nginx config
+        run: sed -i 's/URL_TO_CHANGE/${{ vars.dns_record }}/g' web/nginx.conf
+
+      - name: Terraform Plan
+        run: cd terraform && terraform init && terraform plan
+
+      - name: Terraform apply
+        run: cd terraform && terraform apply --auto-approve
