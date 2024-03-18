@@ -39,4 +39,4 @@ jobs:
         run: cd terraform && terraform init && terraform plan
 
       - name: Terraform apply
-        run: cd terraform && terraform apply --auto-approve
+        run: cd terraform && terraform apply -lock=false --auto-approve
