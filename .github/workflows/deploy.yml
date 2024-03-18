@@ -24,7 +24,8 @@ jobs:
           echo "TF_VAR_service_account_email=${{ secrets.service_account_email }}" >> $GITHUB_ENV
           echo "TF_VAR_personal_email=${{ secrets.personal_email }}" >> $GITHUB_ENV
           echo "TF_VAR_cloudflare_zone_id=${{ secrets.cloudflare_zone_id }}" >> $GITHUB_ENV
-          #
+
+      - name: Export variables in GitHub env
           echo "TF_VAR_project_name=${{ vars.project_name }}" >> $GITHUB_ENV
           echo "TF_VAR_region=${{ vars.region }}" >> $GITHUB_ENV
           echo "TF_VAR_vpc=${{ vars.vpc }}" >> $GITHUB_ENV
