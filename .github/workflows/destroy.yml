@@ -12,6 +12,8 @@ jobs:
 
       - name: HashiCorp - Setup Terraform
         uses: hashicorp/setup-terraform@v3.0.0
+        with:
+          terraform_wrapper: false
 
       - name: Authenticating in GCP
         uses: google-github-actions/auth@v2
@@ -20,20 +22,47 @@ jobs:
 
       - name: Export secrets in GitHub env
         run: |
-          echo "TF_VAR_cloudflare_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}" >> $GITHUB_ENV
-          echo "TF_VAR_service_account_email=${{ secrets.service_account_email }}" >> $GITHUB_ENV
-          echo "TF_VAR_personal_email=${{ secrets.personal_email }}" >> $GITHUB_ENV
-          echo "TF_VAR_cloudflare_zone_id=${{ secrets.cloudflare_zone_id }}" >> $GITHUB_ENV
+          TF_VAR_cloudflare_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}
+          echo TF_VAR_cloudflare_api_token=$TF_VAR_cloudflare_api_token >> $GITHUB_ENV
+
+          TF_VAR_service_account_email=${{ secrets.SERVICE_ACCOUNT_EMAIL }}
+          echo TF_VAR_service_account_email=$TF_VAR_service_account_email >> $GITHUB_ENV
+
+          TF_VAR_personal_email=${{ secrets.PERSONAL_EMAIL }}
+          echo TF_VAR_personal_email=$TF_VAR_personal_email >> $GITHUB_ENV
+
+          TF_VAR_cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}
+          echo TF_VAR_cloudflare_zone_id=$TF_VAR_cloudflare_zone_id >> $GITHUB_ENV
 
       - name: Export variables in GitHub env
         run: |
-          echo "TF_VAR_project_name=${{ vars.project_name }}" >> $GITHUB_ENV
-          echo "TF_VAR_region=${{ vars.region }}" >> $GITHUB_ENV
-          echo "TF_VAR_vpc=${{ vars.vpc }}" >> $GITHUB_ENV
-          echo "TF_VAR_dns_record=${{ vars.dns_record }}" >> $GITHUB_ENV
+          TF_VAR_project_name=${{ vars.PROJECT_NAME }}
+          echo TF_VAR_project_name=$TF_VAR_project_name >> $GITHUB_ENV
 
-      - name: Terraform init
-        run: cd terraform && terraform init
+          TF_VAR_region=${{ vars.REGION }}
+          echo TF_VAR_region=$TF_VAR_region >> $GITHUB_ENV
 
-      - name: Terraform apply
-        run: cd terraform && terraform destroy --auto-approve
+          TF_VAR_vpc=${{ vars.VPC }}
+          echo TF_VAR_vpc=$TF_VAR_vpc >> $GITHUB_ENV
+
+          TF_VAR_dns_record=${{ vars.DNS_RECORD }}
+          echo TF_VAR_dns_record=$TF_VAR_dns_record >> $GITHUB_ENV
+
+          TF_VAR_service_account_scope=${{ vars.SERVICE_ACCOUNT_SCOPE }}
+          echo TF_VAR_service_account_scope=$TF_VAR_service_account_scope >> $GITHUB_ENV
+
+          TF_VAR_domain_name=${{ vars.DOMAIN_NAME }}
+          echo TF_VAR_domain_name=$TF_VAR_domain_name >> $GITHUB_ENV
+
+      - name: Replace nginx server name in nginx config
+        run: sed -i 's/URL_TO_CHANGE/${{ vars.dns_record }}/g' web/nginx.conf
+
+      - name: Terraform Init
+        run: |
+          cd terraform
+          terraform init
+
+      - name: Terraform Destroy
+        run: |
+          cd terraform
+          terraform destroy -lock=false --auto-approve
